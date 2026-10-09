@@ -9,6 +9,7 @@ import { StudioHome } from '@/screens/StudioHome';
 import { BookingAccessScreen } from '@/screens/BookingAccessScreen';
 import { OwnerScreen } from '@/screens/OwnerScreen';
 import { readBootPayload, readSlugFromLocation, useTenant } from '@/tenant/TenantProvider';
+import { backendConfig } from '@/lib/backend';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -99,8 +100,16 @@ export function App() {
   // The shell exists but its configuration could not be loaded — for example a
   // studio that was renamed, suspended, or is not published in this deployment.
   // Rendering the booking screens here would show an empty shell, so say so.
+  //
+  // This must ALSO require a configured backend. Without that condition a
+  // deployment that simply has no Supabase environment variables reports every
+  // studio as "not found", which hides the real cause: the app was never
+  // connected to a database. StudioHome owns that case and explains it.
   const unknownStudio =
-    !tenant.isLoading && tenant.error === null && tenant.profile === null;
+    backendConfig.isConfigured &&
+    !tenant.isLoading &&
+    tenant.error === null &&
+    tenant.profile === null;
 
   if (unknownStudio) {
     return (
