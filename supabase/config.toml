@@ -1,0 +1,23 @@
+# Minimal Supabase CLI 2.x configuration for the booking-pwa project.
+project_id = "booking-pwa"
+
+[api]
+enabled = true
+
+[db]
+major_version = 17
+
+[db.seed]
+enabled = true
+sql_paths = ["./seed.sql"]
+
+[studio]
+enabled = true
+
+[auth]
+enabled = true
+enable_signup = false
+enable_confirmations = false
+
+[storage]
+enabled = true

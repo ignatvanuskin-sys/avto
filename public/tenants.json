@@ -1,0 +1,24 @@
+[
+  {
+    "slug": "akzhol-motors",
+    "name": "Акжол Моторс",
+    "tagline": "Ремонт и обслуживание без ожидания в очереди",
+    "accentColor": "#2f6bff",
+    "timezone": "Asia/Almaty",
+    "basePath": "/s/akzhol-motors/",
+    "heroUrl": "/s/akzhol-motors/assets/hero.jpg",
+    "logoUrl": "/s/akzhol-motors/assets/logo.png",
+    "status": "preview"
+  },
+  {
+    "slug": "graphite-detailing",
+    "name": "GRAPHITE Detailing",
+    "tagline": "Детейлинг по протоколу, а не по настроению",
+    "accentColor": "#ff6a00",
+    "timezone": "Europe/Moscow",
+    "basePath": "/s/graphite-detailing/",
+    "heroUrl": "/s/graphite-detailing/assets/hero.jpg",
+    "logoUrl": "/s/graphite-detailing/assets/logo.png",
+    "status": "preview"
+  }
+]

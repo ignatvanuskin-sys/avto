@@ -1,0 +1,161 @@
+{
+  "$schema": "../../src/shared/business.schema.json",
+  "slug": "graphite-detailing",
+  "name": "GRAPHITE Detailing",
+  "shortName": "GRAPHITE",
+  "tagline": "Детейлинг по протоколу, а не по настроению",
+  "description": "Студия детейлинга: мойка, химчистка, полировка и керамика. Один пост — одна машина в работе, без наложений по времени.",
+  "status": "preview",
+  "timezone": "Europe/Moscow",
+  "locale": "ru-RU",
+  "currency": "RUB",
+  "branding": {
+    "accentColor": "#ff6a00",
+    "accentForeground": "#0b0b0c",
+    "themeColor": "#0b0b0c",
+    "backgroundColor": "#0b0b0c"
+  },
+  "contacts": {
+    "phone": "+7 900 000-00-01",
+    "email": "studio@graphite.example",
+    "whatsapp": "https://wa.me/79000000001",
+    "telegram": "https://t.me/graphite_demo"
+  },
+  "address": "Москва, ул. Примерная, 1, бокс 4",
+  "mapUrl": "https://maps.example.com/graphite",
+  "booking": {
+    "leadMinutes": 90,
+    "horizonDays": 45,
+    "slotStepMinutes": 30,
+    "minCancelNoticeMinutes": 180
+  },
+  "limits": {
+    "publicRateLimitPerMinute": 90,
+    "aiCallsPerDay": 200
+  },
+  "ai": {
+    "enabled": true,
+    "persona": "Спокойный администратор студии детейлинга. Отвечает коротко, подбирает окно и услугу, никогда не обещает цену, которой нет в каталоге."
+  },
+  "pwa": {
+    "display": "standalone",
+    "orientation": "portrait"
+  },
+  "resources": [
+    {
+      "key": "post-1",
+      "name": "Пост 1",
+      "kind": "post",
+      "description": "Основной пост с освещением для полировки",
+      "sortOrder": 1
+    },
+    {
+      "key": "post-2",
+      "name": "Пост 2",
+      "kind": "post",
+      "description": "Пост для мойки и химчистки",
+      "sortOrder": 2
+    },
+    {
+      "key": "post-3",
+      "name": "Пост 3",
+      "kind": "post",
+      "description": "Резервный пост",
+      "sortOrder": 3
+    },
+    {
+      "key": "booth-1",
+      "name": "Малярная камера",
+      "kind": "paint_booth",
+      "description": "Камера для длительных работ с покрытием",
+      "sortOrder": 4
+    }
+  ],
+  "services": [
+    {
+      "key": "express-wash",
+      "name": "Экспресс-мойка",
+      "description": "Контактная мойка кузова, сушка, чернение резины.",
+      "durationMin": 45,
+      "bufferBeforeMin": 10,
+      "bufferAfterMin": 10,
+      "price": 2500,
+      "requiredResourceKind": "post",
+      "category": "Мойка",
+      "imageFile": "assets/service-wash.jpg",
+      "sortOrder": 1
+    },
+    {
+      "key": "interior-detailing",
+      "name": "Химчистка салона",
+      "description": "Глубокая чистка текстиля и кожи, сушка, озонирование.",
+      "durationMin": 240,
+      "bufferBeforeMin": 15,
+      "bufferAfterMin": 30,
+      "price": 14000,
+      "requiredResourceKind": "post",
+      "category": "Салон",
+      "imageFile": "assets/service-interior.jpg",
+      "sortOrder": 2
+    },
+    {
+      "key": "paint-polish",
+      "name": "Полировка кузова",
+      "description": "Абразивная полировка с замерами толщины лака.",
+      "durationMin": 480,
+      "bufferBeforeMin": 30,
+      "bufferAfterMin": 30,
+      "price": 32000,
+      "requiredResourceKind": "post",
+      "category": "Кузов",
+      "imageFile": "assets/service-polish.jpg",
+      "sortOrder": 3
+    },
+    {
+      "key": "ceramic-coating",
+      "name": "Керамическое покрытие",
+      "description": "Двухдневная работа: подготовка, нанесение, полимеризация в камере.",
+      "durationMin": 2880,
+      "bufferBeforeMin": 60,
+      "bufferAfterMin": 120,
+      "price": 85000,
+      "requiredResourceKind": "paint_booth",
+      "category": "Кузов",
+      "spansDays": true,
+      "imageFile": "assets/service-ceramic.jpg",
+      "sortOrder": 4
+    }
+  ],
+  "hours": [
+    { "weekday": 1, "opensAt": "09:00", "closesAt": "21:00" },
+    { "weekday": 2, "opensAt": "09:00", "closesAt": "21:00" },
+    { "weekday": 3, "opensAt": "09:00", "closesAt": "21:00" },
+    { "weekday": 4, "opensAt": "09:00", "closesAt": "21:00" },
+    { "weekday": 5, "opensAt": "09:00", "closesAt": "21:00" },
+    { "weekday": 6, "opensAt": "10:00", "closesAt": "19:00" },
+    { "weekday": 7, "opensAt": "10:00", "closesAt": "19:00", "isClosed": true }
+  ],
+  "exceptions": [
+    {
+      "onDate": "2026-01-01",
+      "isClosed": true,
+      "note": "Новогодние каникулы"
+    },
+    {
+      "onDate": "2026-12-31",
+      "isClosed": false,
+      "opensAt": "09:00",
+      "closesAt": "15:00",
+      "note": "Короткий день"
+    }
+  ],
+  "assets": [
+    { "kind": "logo", "file": "assets/logo.png", "alt": "GRAPHITE Detailing", "sortOrder": 1 },
+    { "kind": "hero", "file": "assets/hero.jpg", "alt": "Бокс студии детейлинга", "sortOrder": 1 },
+    { "kind": "gallery", "file": "assets/gallery-1.jpg", "alt": "Полировка кузова", "sortOrder": 1 },
+    { "kind": "gallery", "file": "assets/gallery-2.jpg", "alt": "Химчистка салона", "sortOrder": 2 },
+    { "kind": "icon", "file": "assets/icon-512.png", "sortOrder": 1 },
+    { "kind": "maskable", "file": "assets/maskable-512.png", "sortOrder": 1 },
+    { "kind": "apple-touch", "file": "assets/apple-touch-180.png", "sortOrder": 1 }
+  ]
+}

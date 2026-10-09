@@ -1,0 +1,136 @@
+{
+  "$schema": "../../src/shared/business.schema.json",
+  "slug": "akzhol-motors",
+  "name": "Акжол Моторс",
+  "shortName": "Акжол",
+  "tagline": "Ремонт и обслуживание без ожидания в очереди",
+  "description": "Техническое обслуживание и ремонт: диагностика, замена масла, развал-схождение, шиномонтаж. Работы ведутся на подъёмниках и в шиномонтажной зоне.",
+  "status": "preview",
+  "timezone": "Asia/Almaty",
+  "locale": "ru-KZ",
+  "currency": "KZT",
+  "branding": {
+    "accentColor": "#2f6bff",
+    "accentForeground": "#0b0b0c",
+    "themeColor": "#0b1020",
+    "backgroundColor": "#0b1020"
+  },
+  "contacts": {
+    "phone": "+7 700 000-00-02",
+    "email": "service@akzhol.example",
+    "whatsapp": "https://wa.me/77000000002"
+  },
+  "address": "Алматы, пр. Примерный, 15",
+  "booking": {
+    "leadMinutes": 60,
+    "horizonDays": 30,
+    "slotStepMinutes": 30,
+    "minCancelNoticeMinutes": 120
+  },
+  "limits": {
+    "publicRateLimitPerMinute": 60,
+    "aiCallsPerDay": 120
+  },
+  "ai": {
+    "enabled": true,
+    "persona": "Администратор автосервиса. Уточняет марку и симптом, предлагает диагностику, не называет цену, которой нет в каталоге."
+  },
+  "pwa": {
+    "display": "standalone",
+    "orientation": "portrait"
+  },
+  "resources": [
+    { "key": "lift-1", "name": "Подъёмник 1", "kind": "lift", "sortOrder": 1 },
+    { "key": "lift-2", "name": "Подъёмник 2", "kind": "lift", "sortOrder": 2 },
+    { "key": "lift-3", "name": "Подъёмник 3", "kind": "lift", "sortOrder": 3 },
+    { "key": "bay-1", "name": "Пост электрики", "kind": "bay", "sortOrder": 4 },
+    { "key": "tire-1", "name": "Шиномонтажный стенд", "kind": "tire_stand", "sortOrder": 5 }
+  ],
+  "services": [
+    {
+      "key": "diagnostics",
+      "name": "Компьютерная диагностика",
+      "description": "Считывание ошибок, проверка датчиков, заключение по узлу.",
+      "durationMin": 60,
+      "bufferBeforeMin": 5,
+      "bufferAfterMin": 10,
+      "price": 12000,
+      "requiredResourceKind": "lift",
+      "category": "Диагностика",
+      "sortOrder": 1
+    },
+    {
+      "key": "oil-change",
+      "name": "Замена масла и фильтров",
+      "description": "Замена масла, масляного и воздушного фильтров.",
+      "durationMin": 45,
+      "bufferBeforeMin": 5,
+      "bufferAfterMin": 10,
+      "price": 18000,
+      "requiredResourceKind": "lift",
+      "category": "ТО",
+      "sortOrder": 2
+    },
+    {
+      "key": "wheel-alignment",
+      "name": "Развал-схождение",
+      "description": "Регулировка углов установки колёс на стенде.",
+      "durationMin": 90,
+      "bufferBeforeMin": 10,
+      "bufferAfterMin": 10,
+      "price": 25000,
+      "requiredResourceKind": "lift",
+      "category": "Подвеска",
+      "sortOrder": 3
+    },
+    {
+      "key": "tire-fitting",
+      "name": "Шиномонтаж комплекта",
+      "description": "Снятие, монтаж, балансировка четырёх колёс.",
+      "durationMin": 60,
+      "bufferBeforeMin": 5,
+      "bufferAfterMin": 5,
+      "price": 14000,
+      "requiredResourceKind": "tire_stand",
+      "category": "Шины",
+      "sortOrder": 4
+    },
+    {
+      "key": "engine-repair",
+      "name": "Ремонт двигателя (сутки)",
+      "description": "Работа с частичной разборкой. Подъёмник занят непрерывно.",
+      "durationMin": 1440,
+      "bufferBeforeMin": 30,
+      "bufferAfterMin": 30,
+      "price": 250000,
+      "requiredResourceKind": "lift",
+      "category": "Двигатель",
+      "spansDays": true,
+      "sortOrder": 5
+    }
+  ],
+  "hours": [
+    { "weekday": 1, "opensAt": "08:30", "closesAt": "19:00" },
+    { "weekday": 2, "opensAt": "08:30", "closesAt": "19:00" },
+    { "weekday": 3, "opensAt": "08:30", "closesAt": "19:00" },
+    { "weekday": 4, "opensAt": "08:30", "closesAt": "19:00" },
+    { "weekday": 5, "opensAt": "08:30", "closesAt": "19:00" },
+    { "weekday": 6, "opensAt": "09:00", "closesAt": "15:00" },
+    { "weekday": 7, "opensAt": "09:00", "closesAt": "15:00", "isClosed": true }
+  ],
+  "exceptions": [
+    {
+      "onDate": "2026-03-21",
+      "isClosed": true,
+      "note": "Наурыз"
+    }
+  ],
+  "assets": [
+    { "kind": "logo", "file": "assets/logo.png", "alt": "Акжол Моторс", "sortOrder": 1 },
+    { "kind": "hero", "file": "assets/hero.jpg", "alt": "Ремонтная зона", "sortOrder": 1 },
+    { "kind": "gallery", "file": "assets/gallery-1.jpg", "alt": "Подъёмник", "sortOrder": 1 },
+    { "kind": "icon", "file": "assets/icon-512.png", "sortOrder": 1 },
+    { "kind": "maskable", "file": "assets/maskable-512.png", "sortOrder": 1 },
+    { "kind": "apple-touch", "file": "assets/apple-touch-180.png", "sortOrder": 1 }
+  ]
+}

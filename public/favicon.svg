@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Онлайн-запись">
+  <rect width="64" height="64" rx="14" fill="#0b0b0c"/>
+  <rect x="14" y="17" width="36" height="34" rx="6" fill="none" stroke="#ff6a00" stroke-width="4"/>
+  <path d="M14 28h36" stroke="#ff6a00" stroke-width="4"/>
+  <path d="M24 12v10M40 12v10" stroke="#ff6a00" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="26" cy="38" r="3" fill="#ff6a00"/>
+  <circle cx="38" cy="38" r="3" fill="#ff6a00"/>
+  <circle cx="26" cy="46" r="3" fill="#ff6a00"/>
+</svg>
