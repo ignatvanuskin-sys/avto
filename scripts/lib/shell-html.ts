@@ -1,5 +1,6 @@
 import type { ResolvedAsset } from './tenant-config';
 import type { ShellConfig } from './manifest';
+import type { PrerenderResult } from './prerender';
 
 export interface BundleRefs {
   /** Hashed entry script produced by the Vite build, e.g. `/assets/index-abc.js`. */
@@ -53,8 +54,12 @@ export function buildTenantShellHtml(options: {
   shell: ShellConfig;
   assets: ResolvedAsset[];
   bundle: BundleRefs;
+  /** Real HTML content, so the page is readable without JavaScript. */
+  prerender?: PrerenderResult | undefined;
+  /** Inline styles for the prerendered block, applied before any stylesheet. */
+  prerenderStyles?: string | undefined;
 }): string {
-  const { shell, assets, bundle } = options;
+  const { shell, assets, bundle, prerender, prerenderStyles } = options;
 
   const assetByKind = (kind: string) => assets.find((asset) => asset.kind === kind);
 
@@ -129,12 +134,15 @@ ${hero ? `    <meta property="og:image" content="${hero.url}" />\n` : ''}${logo 
 
 ${styles}
 ${preloads}
-    <script>
+${prerenderStyles ?? ''}
+${prerender ? `    <script type="application/ld+json">${prerender.structuredData}</script>\n` : ''}    <script>
       window.__TENANT__ = ${escapeJson(boot)};
     </script>
   </head>
   <body class="bg-background text-foreground">
-    <div id="root"></div>
+    <div id="root" data-prerendered="${prerender ? 'true' : 'false'}">${
+      prerender?.content ?? ''
+    }</div>
     <noscript>
       <div style="padding:24px;font-family:system-ui">
         Для записи включите JavaScript или позвоните в студию.
@@ -230,6 +238,48 @@ export function buildRedirects(slugs: string[], routes: string[] = ['booking', '
 
   lines.push('');
   return lines.join('\n');
+}
+
+/**
+ * Resolve the public origin of this deployment.
+ *
+ * A sitemap needs absolute URLs, so the origin has to come from the host.
+ * `SITE_ORIGIN` wins when set; otherwise the platform-provided URL is used
+ * (Vercel exposes `VERCEL_URL`, Cloudflare Pages `CF_PAGES_URL`). When nothing
+ * is available the sitemap is skipped rather than filled with a guessed domain —
+ * a wrong host in a sitemap is worse than no sitemap.
+ */
+export function resolveOrigin(env: Record<string, string | undefined> = process.env): string | null {
+  const explicit = env.SITE_ORIGIN?.trim();
+  if (explicit) return explicit.replace(/\/$/, '');
+
+  const platform = env.VERCEL_URL?.trim() || env.CF_PAGES_URL?.trim();
+  if (platform) return `https://${platform.replace(/^https?:\/\//, '').replace(/\/$/, '')}`;
+
+  return null;
+}
+
+/** Indexable URLs of this deployment. Owner routes are deliberately excluded. */
+export function buildSitemap(slugs: string[], origin: string): string {
+  const urls = [origin, ...slugs.map((slug) => `${origin}/s/${slug}/`)];
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls.map((url) => `  <url><loc>${url}</loc></url>`).join('\n')}
+</urlset>
+`;
+}
+
+export function buildRobots(origin: string | null): string {
+  return [
+    'User-agent: *',
+    'Allow: /',
+    // The cabinet is for staff and must never be indexed.
+    'Disallow: /s/*/owner/',
+    // A single booking is private and reachable only by its token.
+    'Disallow: /s/*/booking/',
+    ...(origin ? ['', `Sitemap: ${origin}/sitemap.xml`] : ['', '# Sitemap omitted: SITE_ORIGIN was not set at build time.']),
+    '',
+  ].join('\n');
 }
 
 export function buildHeaders(slugs: string[]): string {

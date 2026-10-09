@@ -25,9 +25,13 @@ import {
   buildHeaders,
   buildNotFoundHtml,
   buildRedirects,
+  buildRobots,
+  buildSitemap,
   buildTenantShellHtml,
+  resolveOrigin,
   type BundleRefs,
 } from '../lib/shell-html';
+import { buildPrerender, buildPrerenderStyles } from '../lib/prerender';
 import { buildShellConfig } from '../lib/manifest';
 import { loadTenant } from '../lib/tenant-config';
 import { DIST_DIR, ROOT } from '../lib/paths';
@@ -160,7 +164,26 @@ async function main(): Promise<void> {
 
     await mkdir(tenantDist, { recursive: true });
 
-    const shellHtml = buildTenantShellHtml({ shell, assets: tenant.assets, bundle });
+    // Real HTML for the crawler and the first paint. Read from the published
+    // payload the pipeline already wrote, so the static text and the database
+    // can never disagree about prices.
+    const publishedPath = path.join(tenantDist, 'published-config.json');
+    const published = existsSync(publishedPath)
+      ? (JSON.parse(await readFile(publishedPath, 'utf8')) as Record<string, unknown>)
+      : null;
+    const prerender = published ? buildPrerender(published, shell.basePath) : undefined;
+    const prerenderStyles = buildPrerenderStyles(
+      shell.accentColor,
+      shell.backgroundColor,
+    );
+
+    const shellHtml = buildTenantShellHtml({
+      shell,
+      assets: tenant.assets,
+      bundle,
+      prerender,
+      prerenderStyles,
+    });
 
     await writeFile(path.join(tenantDist, 'index.html'), shellHtml, 'utf8');
 
@@ -200,9 +223,22 @@ async function main(): Promise<void> {
   await writeFile(path.join(DIST_DIR, '_headers'), buildHeaders(allSlugs), 'utf8');
   await writeFile(path.join(DIST_DIR, '404.html'), buildNotFoundHtml(), 'utf8');
 
+  // robots.txt is only honoured at the host root, so a per-studio copy would be
+  // dead weight; one root file plus one root sitemap covers every studio.
+  const origin = resolveOrigin();
+  await writeFile(path.join(DIST_DIR, 'robots.txt'), buildRobots(origin), 'utf8');
+  if (origin) {
+    await writeFile(path.join(DIST_DIR, 'sitemap.xml'), buildSitemap(allSlugs, origin), 'utf8');
+  }
+
   logSection('Done');
-  console.log(`shells:     ${writtenSlugs.length}`);
+  console.log(`shells:     ${writtenSlugs.length} (prerendered HTML inside #root)`);
   console.log(`redirects:  ${allSlugs.length} studio(s)`);
+  console.log(
+    origin
+      ? `crawlers:   robots.txt + sitemap.xml (${origin})`
+      : 'crawlers:   robots.txt only — SITE_ORIGIN is not set, so a sitemap was not written',
+  );
 }
 
 await main().catch((error) => {

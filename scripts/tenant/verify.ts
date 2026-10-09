@@ -175,6 +175,47 @@ async function verifyBuild(slugs: string[]): Promise<void> {
       redirects.includes(`/s/${slug}/*`) ? 'redirect rule present' : 'no _redirects rule',
     );
 
+    // The whole point of prerendering: the served HTML must already contain the
+    // studio's name and a real price. Without this the page is an empty shell
+    // for anything that does not run JavaScript.
+    const publishedPath = path.join(tenantDist, 'published-config.json');
+    if (existsSync(publishedPath)) {
+      const published = JSON.parse(await readFile(publishedPath, 'utf8')) as {
+        name?: string;
+        services?: Array<{ priceCents?: number }>;
+      };
+      const studioName = published.name ?? '';
+      const hasName = studioName.length > 0 && html.includes(studioName);
+      const hasPrerenderMarker = html.includes('data-prerendered="true"');
+      const hasStructuredData = html.includes('application/ld+json') && html.includes('AutoRepair');
+
+      check(
+        'build',
+        `${slug}: HTML contains the studio name`,
+        hasName,
+        hasName ? `"${studioName}" present in the served HTML` : 'name missing — the page needs JS to render',
+      );
+      check('build', `${slug}: prerender marker`, hasPrerenderMarker, 'data-prerendered="true"');
+
+      const price = published.services?.find((service) => (service.priceCents ?? 0) > 0)?.priceCents;
+      const hasPrice =
+        price !== undefined && html.replace(/\u00a0|\u202f/g, ' ').includes(String(Math.round(price / 100)));
+      check(
+        'build',
+        `${slug}: HTML contains a price`,
+        hasPrice,
+        hasPrice ? `price ${price} present` : 'no service price found in the HTML',
+      );
+      check(
+        'build',
+        `${slug}: structured data`,
+        hasStructuredData,
+        hasStructuredData ? 'AutoRepair JSON-LD present' : 'missing AutoRepair JSON-LD',
+      );
+    } else {
+      check('build', `${slug}: prerender source`, false, 'missing published-config.json in dist');
+    }
+
     const swPath = path.join(tenantDist, 'sw.js');
     if (!existsSync(swPath)) {
       check('build', `${slug}: service worker`, false, 'missing sw.js');
