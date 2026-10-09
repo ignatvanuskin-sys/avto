@@ -18,7 +18,10 @@ import { Theme, defineTheme } from '@astryxdesign/core/theme';
 import { neutralTheme } from '@astryxdesign/theme-neutral/built';
 import { fetchTenantProfile } from '@/lib/api';
 import { backendConfig } from '@/lib/backend';
+import { fetchPublishedProfile } from '@/lib/published-profile';
 import type { PublicTenantProfile, TenantBoot } from '@shared/tenant-types';
+
+export type ProfileSource = 'database' | 'published-snapshot' | 'none';
 
 export interface TenantState {
   boot: TenantBoot | null;
@@ -28,6 +31,16 @@ export interface TenantState {
   isLoading: boolean;
   error: Error | null;
   refetch: () => void;
+  /** Where the studio description came from. */
+  source: ProfileSource;
+  /**
+   * Whether a booking can actually be placed.
+   *
+   * Only the database can hold a resource: free slots come from
+   * `resource_occupancies`, so a static snapshot can describe a studio but can
+   * never promise a moment. Screens use this instead of pretending.
+   */
+  canBook: boolean;
 }
 
 export function readBootPayload(): TenantBoot | null {
@@ -56,25 +69,36 @@ export function useTenant(): TenantState {
   const basePath = readBasePath();
 
   const query = useQuery({
-    queryKey: ['tenant-profile', slug],
-    enabled: Boolean(slug) && backendConfig.isConfigured,
+    queryKey: ['tenant-profile', slug, backendConfig.isConfigured ? 'db' : 'snapshot'],
+    enabled: Boolean(slug),
     staleTime: 60_000,
-    retry: 1,
+    retry: (failureCount) => backendConfig.isConfigured && failureCount < 1,
     queryFn: async () => {
       if (!slug) throw new Error('Не удалось определить студию из адреса.');
-      return fetchTenantProfile(slug);
+
+      if (backendConfig.isConfigured) {
+        return { profile: await fetchTenantProfile(slug), source: 'database' as const };
+      }
+
+      // No database attached: fall back to the configuration the pipeline
+      // published at build time, so the studio page still shows its real
+      // content instead of an empty shell.
+      const profile = await fetchPublishedProfile(slug, basePath);
+      return { profile, source: profile ? ('published-snapshot' as const) : ('none' as const) };
     },
   });
 
   return {
     boot,
     basePath,
-    profile: query.data ?? null,
+    profile: query.data?.profile ?? null,
     isLoading: query.isLoading,
     error: (query.error as Error | null) ?? null,
     refetch: () => {
       void query.refetch();
     },
+    source: query.data?.source ?? 'none',
+    canBook: backendConfig.isConfigured,
   };
 }
 
